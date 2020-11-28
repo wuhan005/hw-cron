@@ -1,4 +1,4 @@
-package main
+package cas
 
 import "github.com/robertkrimen/otto"
 

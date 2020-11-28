@@ -1,6 +1,6 @@
-package main
+package cas
 
-import "errors"
+import "github.com/pkg/errors"
 
 var (
 	CAS_UNAUTHORISE_SERVICE    = errors.New("未认证授权的服务")

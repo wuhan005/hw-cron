@@ -1,4 +1,4 @@
-package main
+package cas
 
 import (
 	"net/url"
@@ -12,22 +12,21 @@ import (
 
 const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36"
 
-// CasSession 数字杭电统一认证会话
-type CasSession struct {
-	No         string // 学号
-	Password   string // 密码
-	ServiceURL string // 登录后跳转服务
+// Session 数字杭电统一认证会话
+type Session struct {
+	No       string  // 学号
+	Password string  // 密码
+	Service  Service // 登录后跳转服务
 
 	request *req.Req
 }
 
-// NewCasSession 返回一个新的数字杭电统一认证会话
-func NewCasSession(no, password, serviceURL string) (*CasSession, error) {
-	session := &CasSession{
-		No:         no,
-		Password:   password,
-		ServiceURL: serviceURL,
-		request:    req.New(),
+// NewSession 返回一个新的数字杭电统一认证会话
+func NewSession(no, password string) (*Session, error) {
+	session := &Session{
+		No:       no,
+		Password: password,
+		request:  req.New(),
 	}
 
 	err := session.Login()
@@ -39,12 +38,12 @@ func NewCasSession(no, password, serviceURL string) (*CasSession, error) {
 }
 
 // Request 返回 req 请求
-func (s *CasSession) Request() *req.Req {
+func (s *Session) Request() *req.Req {
 	return s.request
 }
 
 // Login 数字杭电登录
-func (s *CasSession) Login() error {
+func (s *Session) Login() error {
 	lt, err := s.getLoginTicket()
 	if err != nil {
 		return err
@@ -66,7 +65,7 @@ func (s *CasSession) Login() error {
 		"_eventId":  []string{"submit"},
 	}
 
-	url := "https://cas.hdu.edu.cn/cas/login?service=" + s.ServiceURL
+	url := "https://cas.hdu.edu.cn/cas/login"
 	resp, err := s.request.Post(url, req.Header{
 		"User-Agent":   userAgent,
 		"Content-Type": "application/x-www-form-urlencoded",
@@ -82,11 +81,28 @@ func (s *CasSession) Login() error {
 	if strings.Contains(body, "用户名密码错误") {
 		return CAS_ACCOUNT_ERROR
 	}
+
 	return nil
 }
 
-func (s *CasSession) getLoginTicket() (string, error) {
-	url := "https://cas.hdu.edu.cn/cas/login?service=" + s.ServiceURL
+// ServiceLogin 登录 CAS 服务
+func (s *Session) ServiceLogin(svc Service) error {
+	svc.SetCasSession(s)
+
+	serviceURL := svc.GetServiceURL()
+	resp, err := s.request.Get(serviceURL, req.Header{
+		"User-Agent": userAgent,
+	})
+	if err != nil {
+		log.Error("Failed to login to service %s: %v", serviceURL, err)
+		return err
+	}
+
+	return svc.LoginCallback(resp.String())
+}
+
+func (s *Session) getLoginTicket() (string, error) {
+	url := "https://cas.hdu.edu.cn/cas/login"
 	resp, err := s.request.Get(url, req.Header{
 		"User-Agent": userAgent,
 	})
