@@ -88,6 +88,5 @@ func (f *Fanya) submitForm(body string) (string, error) {
 // New 返回一个新的泛雅会话
 func New() *Fanya {
 	fanya := &Fanya{}
-
 	return fanya
 }
