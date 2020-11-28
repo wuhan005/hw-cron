@@ -1,0 +1,19 @@
+name: cron
+on:
+  schedule:
+    - cron: 0 0 0/2 * *
+  push:
+    
+env:
+  HDU_NO: ${{ secrets.HDU_NO }}
+  HDU_PASSWORD: ${{ secrets.HDU_PASSWORD }}
+  ALERT_URL: ${{ secrets.ALERT_URL }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+      - run: go build . && ./hw-cron
