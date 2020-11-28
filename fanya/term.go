@@ -20,7 +20,7 @@ func NewTerm(begin, end string) *term {
 	}
 }
 
-func (f *Fanya) getNowTerm() (*term, error) {
+func (f *Fanya) GetAllTerm() ([]*term, error) {
 	resp, err := f.casSession.Request().Get("http://hdu.fanya.chaoxing.com/courselist/study")
 	if err != nil {
 		return nil, err
@@ -29,9 +29,21 @@ func (f *Fanya) getNowTerm() (*term, error) {
 	if len(termSegment) == 0 || len(termSegment[0]) < 3 {
 		return nil, errors.New("获取泛雅学期信息失败")
 	}
-	from := termSegment[0][1]
-	to := termSegment[0][2]
 
-	log.Trace("Term: %v - %v", from, to)
-	return NewTerm(from, to), nil
+	terms := make([]*term, len(termSegment))
+	for i := range terms {
+		terms[i] = NewTerm(termSegment[i][1], termSegment[i][2])
+	}
+	return terms, nil
+}
+
+func (f *Fanya) GetNowTerm() (*term, error) {
+	terms, err := f.GetAllTerm()
+	if err != nil {
+		return nil, err
+	}
+	term := terms[0]
+
+	log.Trace("Term: %v - %v", term.Begin, term.End)
+	return term, nil
 }

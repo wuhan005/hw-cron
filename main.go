@@ -29,10 +29,22 @@ func main() {
 		log.Fatal("Failed to login to fanya: %v", err)
 	}
 
-	courses, err := fy.GetCourseList()
+	terms, err := fy.GetAllTerm()
+	if err != nil {
+		log.Fatal("Failed to get all term: %v", err)
+	}
+
+	// HACK: get the first and the third term.
+	courses1, err := fy.GetCourseList(terms[0])
 	if err != nil {
 		log.Fatal("Failed to get courses list: %v", err)
 	}
+	courses2, err := fy.GetCourseList(terms[2])
+	if err != nil {
+		log.Fatal("Failed to get courses list: %v", err)
+	}
+
+	courses := append(courses1, courses2...)
 
 	for _, course := range courses {
 		homeworks, err := fy.GetHomeworks(course)
@@ -80,6 +92,6 @@ func sendAlert(title, content string) {
 	alertURL := os.Getenv("ALERT_URL")
 	alertURL = strings.ReplaceAll(alertURL, "{{title}}", url.QueryEscape(title))
 	alertURL = strings.ReplaceAll(alertURL, "{{content}}", url.QueryEscape(content))
-	
+
 	_, _ = req.Get(alertURL)
 }

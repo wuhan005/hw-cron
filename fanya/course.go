@@ -18,14 +18,9 @@ type Courses struct {
 }
 
 // GetCourseList 返回当前学期课程
-func (f *Fanya) GetCourseList() ([]Courses, error) {
-	//term, err := f.getNowTerm()
-	//if err != nil {
-	//	return nil, err
-	//}
-
+func (f *Fanya) GetCourseList(term *term) ([]Courses, error) {
 	// 获取第一页所有课程信息
-	url := fmt.Sprintf("http://hdu.fanya.chaoxing.com/courselist/study")
+	url := fmt.Sprintf("http://hdu.fanya.chaoxing.com/courselist/study?begin=%s&end=%s", term.Begin, term.End)
 	resp, err := f.casSession.Request().Get(url, req.Header{
 		"User-Agent": userAgent,
 	})
@@ -40,22 +35,30 @@ func (f *Fanya) GetCourseList() ([]Courses, error) {
 	}
 
 	courseNameNodes := htmlquery.Find(nodes, `//*[@id="zkaikeshenqing"]/div[1]/ul/li/dl/dt`)
+	log.Trace("Find %d courses", len(courseNameNodes))
+
 	courses := make([]Courses, len(courseNameNodes))
 	for i, node := range courseNameNodes {
-		courses[i].Name = strings.TrimSpace(node.FirstChild.Data)
+		if node.FirstChild != nil {
+			courses[i].Name = strings.TrimSpace(node.FirstChild.Data)
+		}
 	}
 
 	courseTeacherNodes := htmlquery.Find(nodes, `//*[@id="zkaikeshenqing"]/div[1]/ul/li/dl/dd[1]`)
 	for i, node := range courseTeacherNodes {
-		courses[i].Teacher = strings.TrimSpace(node.FirstChild.Data)
+		if node.FirstChild != nil {
+			courses[i].Teacher = strings.TrimSpace(node.FirstChild.Data)
+		}
 	}
 
 	courseSchoolNodes := htmlquery.Find(nodes, `//*[@id="zkaikeshenqing"]/div[1]/ul/li/dl/dd[2]`)
 	for i, node := range courseSchoolNodes {
-		courses[i].School = strings.TrimSpace(node.FirstChild.Data)
+		if node.FirstChild != nil {
+			courses[i].School = strings.TrimSpace(node.FirstChild.Data)
+		}
 	}
 
-	courseLinkNodes := htmlquery.Find(nodes, `//*[@id="zkaikeshenqing"]/div[1]/ul/li/a`)
+	courseLinkNodes := htmlquery.Find(nodes, `//*[@id="zkaikeshenqing"]/div[1]/ul/li/a[1]`)
 	for i, node := range courseLinkNodes {
 		for _, attr := range node.Attr {
 			if attr.Key == "href" {
@@ -64,8 +67,6 @@ func (f *Fanya) GetCourseList() ([]Courses, error) {
 			}
 		}
 	}
-
-	log.Trace("Find %d courses", len(courses))
 
 	return courses, nil
 }
