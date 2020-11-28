@@ -37,7 +37,7 @@ func (f *Fanya) LoginCallback(body string) error {
 	}
 
 	// http://passport2.chaoxing.com/loginfanya
-	body, err = f.submitForm(body)
+	_, err = f.submitForm(body)
 	if err != nil {
 		return err
 	}
