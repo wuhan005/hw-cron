@@ -19,12 +19,13 @@ type Courses struct {
 
 // GetCourseList 返回当前学期课程
 func (f *Fanya) GetCourseList() ([]Courses, error) {
-	term, err := f.getNowTerm()
-	if err != nil {
-		return nil, err
-	}
+	//term, err := f.getNowTerm()
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	url := fmt.Sprintf("http://hdu.fanya.chaoxing.com/courselist/study?begin=%s&end=%s", term.Begin, term.End)
+	// 获取第一页所有课程信息
+	url := fmt.Sprintf("http://hdu.fanya.chaoxing.com/courselist/study")
 	resp, err := f.casSession.Request().Get(url, req.Header{
 		"User-Agent": userAgent,
 	})
