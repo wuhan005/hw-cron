@@ -1,9 +1,9 @@
 name: cron
 on:
   schedule:
-    - cron: 0 0 0/2 * *
+    - cron: '0 0 0/2 * *'
   push:
-    
+
 env:
   HDU_NO: ${{ secrets.HDU_NO }}
   HDU_PASSWORD: ${{ secrets.HDU_PASSWORD }}
