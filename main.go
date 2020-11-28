@@ -80,5 +80,6 @@ func sendAlert(title, content string) {
 	alertURL := os.Getenv("ALERT_URL")
 	alertURL = strings.ReplaceAll(alertURL, "{{title}}", url.QueryEscape(title))
 	alertURL = strings.ReplaceAll(alertURL, "{{content}}", url.QueryEscape(content))
+	
 	_, _ = req.Get(alertURL)
 }
