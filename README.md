@@ -1,4 +1,4 @@
-# hw-cron
+# hw-cron ![Go](https://github.com/wuhan005/hw-cron/workflows/Go/badge.svg?branch=master) ![cron](https://github.com/wuhan005/hw-cron/workflows/cron/badge.svg?branch=master)
 定时推送提醒我及时完成泛雅上的作业。
 
 运行所需环境变量：
