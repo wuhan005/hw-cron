@@ -12,7 +12,7 @@ import (
 	"github.com/wuhan005/hw-cron/cas"
 )
 
-const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.36"
+const userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_0_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.67 Safari/537.37"
 
 var _ cas.Service = new(Fanya)
 
@@ -37,10 +37,10 @@ func (f *Fanya) LoginCallback(body string) error {
 	}
 
 	// http://passport2.chaoxing.com/loginfanya
-	_, err = f.submitForm(body)
-	if err != nil {
-		return err
-	}
+	//_, err = f.submitForm(body)
+	//if err != nil {
+	//	return err
+	//}
 
 	// 检查登录状态
 	resp, err := f.casSession.Request().Get("http://hdu.fanya.chaoxing.com/topjs?index=quote", req.Header{
