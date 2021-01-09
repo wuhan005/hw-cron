@@ -31,7 +31,7 @@ func (f *Fanya) SetCasSession(casSession *cas.Session) {
 // LoginCallback 泛雅登录后跳转为前端 JS 提交登录表单，这里需要模拟。
 func (f *Fanya) LoginCallback(body string) error {
 	// http://hdu.fanya.chaoxing.com/sso/logindsso
-	body, err := f.submitForm(body)
+	_, err := f.submitForm(body)
 	if err != nil {
 		return err
 	}
